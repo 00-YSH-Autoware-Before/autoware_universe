@@ -95,7 +95,9 @@ class carla_ros2_interface(object):
         self.param_values = {}
         for param_name, param_type in self.parameters.items():
             self.ros2_node.declare_parameter(param_name, param_type)
-            self.param_values[param_name] = self.ros2_node.get_parameter(param_name).value
+            self.param_values[param_name] = self.ros2_node.get_parameter(
+                param_name
+            ).value
 
         # Publish clock
         self.clock_publisher = self.ros2_node.create_publisher(Clock, "/clock", 10)
@@ -108,7 +110,10 @@ class carla_ros2_interface(object):
 
         # Subscribing Autoware Control messages and converting to CARLA control
         self.sub_control = self.ros2_node.create_subscription(
-            ActuationCommandStamped, "/control/command/actuation_cmd", self.control_callback, 1
+            ActuationCommandStamped,
+            "/control/command/actuation_cmd",
+            self.control_callback,
+            1,
         )
 
         self.sub_vehicle_initialpose = self.ros2_node.create_subscription(
@@ -150,7 +155,11 @@ class carla_ros2_interface(object):
             elif sensor["type"] == "sensor.lidar.ray_cast":
                 if sensor["id"] in self.sensor_frequencies:
                     self.pub_lidar[sensor["id"]] = self.ros2_node.create_publisher(
-                        PointCloud2, f'/sensing/lidar/{sensor["id"]}/pointcloud_before_sync', 10
+                        PointCloud2,
+                        # 10.15_YSH_lidar_topic_changed
+                        # f'/sensing/lidar/{sensor["id"]}/pointcloud_before_sync',
+                        f"/sensing/lidar/pointcloud_before_sync",
+                        10,
                     )
                 else:
                     self.ros2_node.get_logger().info(
@@ -158,10 +167,16 @@ class carla_ros2_interface(object):
                     )
             elif sensor["type"] == "sensor.other.imu":
                 self.pub_imu = self.ros2_node.create_publisher(
-                    Imu, "/sensing/imu/tamagawa/imu_raw", 1
+                    # 10.15_YSH_imu_topic_changed
+                    Imu,
+                    # "/sensing/imu/tamagawa/imu_raw",
+                    "/sensing/imu/imu_raw",
+                    1,
                 )
             else:
-                self.ros2_node.get_logger().info(f'No Publisher for {sensor["type"]} Sensor')
+                self.ros2_node.get_logger().info(
+                    f'No Publisher for {sensor["type"]} Sensor'
+                )
                 pass
 
         self.spin_thread = threading.Thread(target=rclpy.spin, args=(self.ros2_node,))
@@ -205,7 +220,9 @@ class carla_ros2_interface(object):
             PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
             PointField(name="z", offset=8, datatype=PointField.FLOAT32, count=1),
             PointField(name="intensity", offset=12, datatype=PointField.UINT8, count=1),
-            PointField(name="return_type", offset=13, datatype=PointField.UINT8, count=1),
+            PointField(
+                name="return_type", offset=13, datatype=PointField.UINT8, count=1
+            ),
             PointField(name="channel", offset=14, datatype=PointField.UINT16, count=1),
         ]
 
@@ -225,7 +242,10 @@ class carla_ros2_interface(object):
         for i in range(self.channels[1]["channels"]):
             current_ring_points_count = carla_lidar_measurement.get_point_count(i)
             channel = numpy.vstack(
-                (channel, numpy.full((current_ring_points_count, 1), i, dtype=numpy.uint16))
+                (
+                    channel,
+                    numpy.full((current_ring_points_count, 1), i, dtype=numpy.uint16),
+                )
             )
 
         lidar_data = numpy.hstack((lidar_data[:, :3], intensity, return_type, channel))
@@ -270,7 +290,9 @@ class carla_ros2_interface(object):
         header = self.get_msg_header(frame_id="map")
         out_pose_with_cov = PoseWithCovarianceStamped()
         pose_carla = Pose()
-        pose_carla.position = carla_location_to_ros_point(self.ego_actor.get_transform().location)
+        pose_carla.position = carla_location_to_ros_point(
+            self.ego_actor.get_transform().location
+        )
         pose_carla.orientation = carla_rotation_to_ros_quaternion(
             self.ego_actor.get_transform().rotation
         )
@@ -393,9 +415,9 @@ class carla_ros2_interface(object):
 
         dt = self.timestamp - self.prev_timestamp
         if dt > 0.0:
-            steer_output = self.prev_steer_output + (steer_input - self.prev_steer_output) * (
-                dt / (self.tau + dt)
-            )
+            steer_output = self.prev_steer_output + (
+                steer_input - self.prev_steer_output
+            ) * (dt / (self.tau + dt))
         self.prev_steer_output = steer_output
         self.prev_timestamp = self.timestamp
         return steer_output
@@ -410,7 +432,9 @@ class carla_ros2_interface(object):
         max_steer_ratio = numpy.interp(
             abs(current_vel.x), [v.x for v in steer_curve], [v.y for v in steer_curve]
         )
-        out_cmd.steer = self.first_order_steering(-in_cmd.actuation.steer_cmd) * max_steer_ratio
+        out_cmd.steer = (
+            self.first_order_steering(-in_cmd.actuation.steer_cmd) * max_steer_ratio
+        )
         out_cmd.brake = in_cmd.actuation.brake_cmd
         self.current_control = out_cmd
 
@@ -422,7 +446,9 @@ class carla_ros2_interface(object):
         self.publish_prev_times["status"] = datetime.datetime.now()
 
         # convert velocity from cartesian to ego frame
-        trans_mat = numpy.array(self.ego_actor.get_transform().get_matrix()).reshape(4, 4)
+        trans_mat = numpy.array(self.ego_actor.get_transform().get_matrix()).reshape(
+            4, 4
+        )
         rot_mat = trans_mat[0:3, 0:3]
         inv_rot_mat = rot_mat.T
         vel_vec = numpy.array(
@@ -444,7 +470,9 @@ class carla_ros2_interface(object):
         out_vel_state.longitudinal_velocity = ego_velocity[0]
         out_vel_state.lateral_velocity = ego_velocity[1]
         out_vel_state.heading_rate = (
-            self.ego_actor.get_transform().transform_vector(self.ego_actor.get_angular_velocity()).z
+            self.ego_actor.get_transform()
+            .transform_vector(self.ego_actor.get_angular_velocity())
+            .z
         )
 
         out_steering_state.stamp = out_vel_state.header.stamp

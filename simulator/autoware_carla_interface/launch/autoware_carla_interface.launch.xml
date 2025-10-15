@@ -4,9 +4,12 @@
     <arg name="port" default="2000"/>
     <arg name="timeout" default="20"/>
     <arg name="ego_vehicle_role_name" default="ego_vehicle"/>
-    <arg name="vehicle_type" default="vehicle.toyota.prius"/>
+    <!-- 10.15_YSH_Carla_model_changed -->
+    <!-- <arg name="vehicle_type" default="vehicle.toyota.prius"/> -->
+    <arg name="vehicle_type" default="vehicle.lincoln.mkz_2020"/>
+
     <arg name="spawn_point" default="None" description="location of ego vehicle spawn (default is random), example = [0.2 , 4.1, 0.4, 0., 0., 0.]"/>
-    <arg name="carla_map" default="Town01"/>
+    <arg name="carla_map" default="Town05"/>
     <arg name="sync_mode" default="True"/>
     <arg name="fixed_delta_seconds" default="0.05" description="Time step for CARLA, FPS=1/value"/>
     <arg name="objects_definition_file" default="$(find-pkg-share autoware_carla_interface)/objects.json"/>
