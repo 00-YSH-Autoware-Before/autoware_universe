@@ -31,12 +31,19 @@ class SmallUnknownPipeline:
         self.context = context
         self.vehicle_info = self.get_vehicle_info()
         with open(
-            LaunchConfiguration("irregular_object_detector_param_path").perform(context), "r"
+            LaunchConfiguration("irregular_object_detector_param_path").perform(
+                context
+            ),
+            "r",
         ) as f:
-            self.irregular_object_detector_param = yaml.safe_load(f)["/**"]["ros__parameters"]
+            self.irregular_object_detector_param = yaml.safe_load(f)["/**"][
+                "ros__parameters"
+            ]
 
         with open(LaunchConfiguration("sync_param_path").perform(context), "r") as f:
-            self.roi_pointcloud_fusion_sync_param = yaml.safe_load(f)["/**"]["ros__parameters"]
+            self.roi_pointcloud_fusion_sync_param = yaml.safe_load(f)["/**"][
+                "ros__parameters"
+            ]
 
         self.roi_pointcloud_fusion_param = self.irregular_object_detector_param[
             "roi_pointcloud_fusion"
@@ -54,7 +61,9 @@ class SmallUnknownPipeline:
 
         for index, camera_id in enumerate(self.camera_ids):
             rois_timestamp_offsets.append(
-                self.roi_pointcloud_fusion_sync_param["rois_timestamp_offsets"][camera_id]
+                self.roi_pointcloud_fusion_sync_param["rois_timestamp_offsets"][
+                    camera_id
+                ]
             )
             rois_timestamp_noise_window.append(
                 self.roi_pointcloud_fusion_sync_param["matching_strategy"][
@@ -62,12 +71,14 @@ class SmallUnknownPipeline:
                 ][camera_id]
             )
             approximate_camera_projection.append(
-                self.roi_pointcloud_fusion_sync_param["approximate_camera_projection"][camera_id]
-            )
-            point_project_to_unrectified_image.append(
-                self.roi_pointcloud_fusion_sync_param["point_project_to_unrectified_image"][
+                self.roi_pointcloud_fusion_sync_param["approximate_camera_projection"][
                     camera_id
                 ]
+            )
+            point_project_to_unrectified_image.append(
+                self.roi_pointcloud_fusion_sync_param[
+                    "point_project_to_unrectified_image"
+                ][camera_id]
             )
             self.roi_pointcloud_fusion_param[f"input/rois{index}"] = (
                 f"/perception/object_recognition/detection/rois{camera_id}"
@@ -79,7 +90,9 @@ class SmallUnknownPipeline:
                 f"/sensing/camera/camera{camera_id}/image_raw"
             )
 
-        self.roi_pointcloud_fusion_sync_param["rois_timestamp_offsets"] = rois_timestamp_offsets
+        self.roi_pointcloud_fusion_sync_param["rois_timestamp_offsets"] = (
+            rois_timestamp_offsets
+        )
         self.roi_pointcloud_fusion_sync_param["approximate_camera_projection"] = (
             approximate_camera_projection
         )
@@ -100,8 +113,12 @@ class SmallUnknownPipeline:
         if not gp:
             gp = dict(self.context.launch_configurations.get("global_params", {}))
         p = {}
-        p["vehicle_length"] = gp["front_overhang"] + gp["wheel_base"] + gp["rear_overhang"]
-        p["vehicle_width"] = gp["wheel_tread"] + gp["left_overhang"] + gp["right_overhang"]
+        p["vehicle_length"] = (
+            gp["front_overhang"] + gp["wheel_base"] + gp["rear_overhang"]
+        )
+        p["vehicle_width"] = (
+            gp["wheel_tread"] + gp["left_overhang"] + gp["right_overhang"]
+        )
         p["min_longitudinal_offset"] = -gp["rear_overhang"]
         p["max_longitudinal_offset"] = gp["front_overhang"] + gp["wheel_base"]
         p["min_lateral_offset"] = -(gp["wheel_tread"] / 2.0 + gp["right_overhang"])
@@ -118,16 +135,25 @@ class SmallUnknownPipeline:
                 package="autoware_pointcloud_preprocessor",
                 plugin="autoware::pointcloud_preprocessor::CropBoxFilterComponent",
                 name="crop_box_filter",
-                remappings=[("input", input_topic), ("output", "cropped_range/pointcloud")],
+                remappings=[
+                    ("input", input_topic),
+                    ("output", "cropped_range/pointcloud"),
+                ],
                 parameters=[
                     {
                         "input_frame": LaunchConfiguration("base_frame"),
                         "output_frame": LaunchConfiguration("base_frame"),
                     },
-                    self.irregular_object_detector_param["crop_box_filter"]["parameters"],
+                    self.irregular_object_detector_param["crop_box_filter"][
+                        "parameters"
+                    ],
                 ],
                 extra_arguments=[
-                    {"use_intra_process_comms": LaunchConfiguration("use_intra_process")}
+                    {
+                        "use_intra_process_comms": LaunchConfiguration(
+                            "use_intra_process"
+                        )
+                    }
                 ],
             )
         )
@@ -143,10 +169,16 @@ class SmallUnknownPipeline:
                     ("output", "obstacle_segmentation/pointcloud"),
                 ],
                 parameters=[
-                    self.irregular_object_detector_param["ground_segmentation"]["parameters"]
+                    self.irregular_object_detector_param["ground_segmentation"][
+                        "parameters"
+                    ]
                 ],
                 extra_arguments=[
-                    {"use_intra_process_comms": LaunchConfiguration("use_intra_process")}
+                    {
+                        "use_intra_process_comms": LaunchConfiguration(
+                            "use_intra_process"
+                        )
+                    }
                 ],
             )
         )
@@ -192,11 +224,16 @@ def generate_launch_description():
     launch_arguments = []
 
     def add_launch_arg(name: str, default_value=None):
-        launch_arguments.append(DeclareLaunchArgument(name, default_value=default_value))
+        launch_arguments.append(
+            DeclareLaunchArgument(name, default_value=default_value)
+        )
 
-    add_launch_arg("input/pointcloud", "/sensing/lidar/concatenated/pointcloud")
+    # 10.15_YSH_lidar_topic_changed
+    # add_launch_arg("input/pointcloud", "/sensing/lidar/concatenated/pointcloud")
+    add_launch_arg("input/pointcloud", "/sensing/lidar/pointcloud_before_sync")
     add_launch_arg(
-        "output_topic", "/perception/object_recognition/detection/irregular_object/clusters"
+        "output_topic",
+        "/perception/object_recognition/detection/irregular_object/clusters",
     )
     add_launch_arg("base_frame", "base_link")
     add_launch_arg("use_intra_process", "True")

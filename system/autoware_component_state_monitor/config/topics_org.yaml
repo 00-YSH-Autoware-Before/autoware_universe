@@ -85,12 +85,9 @@
     topic_type: autoware_perception_msgs/msg/TrafficLightGroupArray
     best_effort: false
     transient_local: false
-    # In CARLA the camera/traffic light recognition node may be disabled.
-    # Treat missing traffic_signals as non-fatal for simulation by disabling
-    # the error condition here (set rates and timeout to 0.0).
-    warn_rate: 0.0
-    error_rate: 0.0
-    timeout: 0.0
+    warn_rate: 5.0
+    error_rate: 1.0
+    timeout: 1.0
 
 - module: planning
   mode: [online, logging_simulation, planning_simulation]

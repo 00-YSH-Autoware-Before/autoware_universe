@@ -214,7 +214,10 @@ class carla_ros2_interface(object):
             return
         self.publish_prev_times[id_] = datetime.datetime.now()
 
-        header = self.get_msg_header(frame_id="velodyne_top_changed")
+        # 10.17_YSH_lidar_frame_changed
+        # header = self.get_msg_header(frame_id="velodyne_top_changed")
+        header = self.get_msg_header(frame_id="velodyne_top")
+
         fields = [
             PointField(name="x", offset=0, datatype=PointField.FLOAT32, count=1),
             PointField(name="y", offset=4, datatype=PointField.FLOAT32, count=1),
@@ -386,24 +389,34 @@ class carla_ros2_interface(object):
         self.publish_prev_times["imu"] = datetime.datetime.now()
 
         imu_msg = Imu()
-        imu_msg.header = self.get_msg_header(frame_id="tamagawa/imu_link_changed")
-        imu_msg.angular_velocity.x = -carla_imu_measurement.gyroscope.x
-        imu_msg.angular_velocity.y = carla_imu_measurement.gyroscope.y
+        # 10.17_YSH_imu_frame_changed
+        # imu_msg.header = self.get_msg_header(frame_id="_imu_link_changed")
+        imu_msg.header = self.get_msg_header(frame_id="imu_link")
+
+        # 10.17_YSH_imu_angular_velocity_fixed
+        # imu_msg.angular_velocity.x = -carla_imu_measurement.gyroscope.x
+        # imu_msg.angular_velocity.y = carla_imu_measurement.gyroscope.y
+        # imu_msg.angular_velocity.z = -carla_imu_measurement.gyroscope.z
+        # Correct transformation from CARLA's coordinate system to Autoware's (FLU)
+        imu_msg.angular_velocity.x = carla_imu_measurement.gyroscope.x
+        imu_msg.angular_velocity.y = -carla_imu_measurement.gyroscope.y
         imu_msg.angular_velocity.z = -carla_imu_measurement.gyroscope.z
 
         imu_msg.linear_acceleration.x = carla_imu_measurement.accelerometer.x
         imu_msg.linear_acceleration.y = -carla_imu_measurement.accelerometer.y
         imu_msg.linear_acceleration.z = carla_imu_measurement.accelerometer.z
 
-        roll = math.radians(carla_imu_measurement.transform.rotation.roll)
-        pitch = -math.radians(carla_imu_measurement.transform.rotation.pitch)
-        yaw = -math.radians(carla_imu_measurement.transform.rotation.yaw)
-
-        quat = euler2quat(roll, pitch, yaw)
-        imu_msg.orientation.w = quat[0]
-        imu_msg.orientation.x = quat[1]
-        imu_msg.orientation.y = quat[2]
-        imu_msg.orientation.z = quat[3]
+        # 10.17_YSH_imu_orientation_fixed - Use same quaternion conversion as GNSS pose
+        # roll = math.radians(carla_imu_measurement.transform.rotation.roll)
+        # pitch = -math.radians(carla_imu_measurement.transform.rotation.pitch)
+        # yaw = -math.radians(carla_imu_measurement.transform.rotation.yaw)
+        # 10.17_YSH_imu_orientation_fixed - Use vehicle's actual orientation instead of sensor transform
+        # vehicle_rotation = self.ego_actor.get_transform().rotation
+        # roll = math.radians(vehicle_rotation.roll)
+        # pitch = -math.radians(vehicle_rotation.pitch)
+        # yaw = -math.radians(vehicle_rotation.yaw)
+        vehicle_rotation = self.ego_actor.get_transform().rotation
+        imu_msg.orientation = carla_rotation_to_ros_quaternion(vehicle_rotation)
 
         self.pub_imu.publish(imu_msg)
 

@@ -45,7 +45,9 @@ def get_downsample_filter_node(setting: dict) -> ComposableNode:
                 "voxel_size_z": voxel_size,
             }
         ],
-        extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+        extra_arguments=[
+            {"use_intra_process_comms": LaunchConfiguration("use_intra_process")}
+        ],
     )
 
 
@@ -64,7 +66,10 @@ def get_downsample_preprocess_nodes(voxel_size: float) -> list:
         "output_topic": "obstacle/downsample/pointcloud",
         "voxel_size": voxel_size,
     }
-    return [get_downsample_filter_node(raw_settings), get_downsample_filter_node(obstacle_settings)]
+    return [
+        get_downsample_filter_node(raw_settings),
+        get_downsample_filter_node(obstacle_settings),
+    ]
 
 
 def launch_setup(context, *args, **kwargs):
@@ -122,7 +127,9 @@ def launch_setup(context, *args, **kwargs):
                 occupancy_grid_map_updater_params,
                 {"updater_type": LaunchConfiguration("updater_type")},
             ],
-            extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+            extra_arguments=[
+                {"use_intra_process_comms": LaunchConfiguration("use_intra_process")}
+            ],
         )
     )
 
@@ -169,7 +176,9 @@ def generate_launch_description():
             add_launch_arg("pointcloud_container_name", "pointcloud_container"),
             add_launch_arg("individual_container_name", "occupancy_grid_map_container"),
             add_launch_arg("input/obstacle_pointcloud", "no_ground/oneshot/pointcloud"),
-            add_launch_arg("input/raw_pointcloud", "concatenated/pointcloud"),
+            # 10.15_YSH_changed_input_pointcloud_name
+            # add_launch_arg("input/raw_pointcloud", "concatenated/pointcloud"),
+            add_launch_arg("input/raw_pointcloud", "pointcloud_before_sync"),
             add_launch_arg("output", "occupancy_grid"),
             add_launch_arg(
                 "param_file",

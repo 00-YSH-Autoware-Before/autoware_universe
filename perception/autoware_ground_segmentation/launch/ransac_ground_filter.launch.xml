@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="ground_segmentation_param_file" default="$(find-pkg-share autoware_ground_segmentation)/config/ransac_ground_filter.param.yaml"/>
-  <arg name="input/pointcloud" default="/sensing/lidar/concatenated/pointcloud"/>
+  <!-- 10.15_YSH_changed_input_pointcloud_name -->
+  <!-- <arg name="input/pointcloud" default="/sensing/lidar/concatenated/pointcloud"/> -->
+  <arg name="input/pointcloud" default="/sensing/lidar/pointcloud_before_sync"/>
   <arg name="output/pointcloud" default="/perception/obstacle_segmentation/pointcloud"/>
   <node pkg="autoware_ground_segmentation" exec="ransac_ground_filter_node" name="ransac_ground_filter_node" output="screen">
     <remap from="input" to="$(var input/pointcloud)"/>

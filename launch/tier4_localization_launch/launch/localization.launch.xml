@@ -25,7 +25,8 @@
   <arg name="lidar_marker_localizer/pointcloud_preprocessor/crop_box_filter_measurement_range_param_path"/>
   <arg name="lidar_marker_localizer/pointcloud_preprocessor/ring_filter_param_path"/>
 
-  <arg name="input_pointcloud" default="/sensing/lidar/concatenated/pointcloud"/>
+  <!-- 10.15_YSH_lidar_topic_changed -->
+  <arg name="input_pointcloud" default="/sensing/lidar/pointcloud_before_sync"/>
   <arg name="localization_pointcloud_container_name" default="/pointcloud_container"/>
 
   <!-- localization module -->

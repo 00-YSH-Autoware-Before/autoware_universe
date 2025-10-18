@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <launch>
   <!--default parameter follows node setting -->
-  <arg name="input/obstacle_pointcloud" default="concatenated/pointcloud"/>
+  <!-- 10.15_YSH_changed_input_pointcloud_name -->
+  <!-- <arg name="input/obstacle_pointcloud" default="concatenated/pointcloud"/> -->
+  <arg name="input/obstacle_pointcloud" default="pointcloud_before_sync"/>
   <arg name="input/raw_pointcloud" default="no_ground/oneshot/pointcloud"/>
   <arg name="output" default="/perception/occupancy_grid_map/map"/>
   <arg name="use_intra_process" default="false"/>

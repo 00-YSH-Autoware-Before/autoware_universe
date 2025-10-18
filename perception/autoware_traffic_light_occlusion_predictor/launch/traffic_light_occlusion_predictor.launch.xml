@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="input/cloud" default="/sensing/lidar/concatenated/pointcloud"/>
+  <!-- 10.15_YSH_changed_input_pointcloud_name -->
+  <!-- <arg name="input/cloud" default="/sensing/lidar/concatenated/pointcloud"/> -->
+  <arg name="input/cloud" default="/sensing/lidar/pointcloud_before_sync"/>
   <arg name="input/vector_map" default="/map/vector_map"/>
   <arg name="input/camera_info"/>
   <arg name="input/rois"/>

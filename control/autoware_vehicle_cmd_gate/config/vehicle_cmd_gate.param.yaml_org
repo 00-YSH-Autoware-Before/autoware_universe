@@ -2,8 +2,8 @@
   ros__parameters:
     update_rate: 10.0
     system_emergency_heartbeat_timeout: 0.5
-    use_emergency_handling: false # true → false (MRM 완전 비활성화!)
-    check_external_emergency_heartbeat: false # MRM 체크 안 함
+    use_emergency_handling: true
+    check_external_emergency_heartbeat: $(var check_external_emergency_heartbeat)
     enable_cmd_limit_filter: true
     filter_activated_count_threshold: 5
     filter_activated_velocity_threshold: 1.0

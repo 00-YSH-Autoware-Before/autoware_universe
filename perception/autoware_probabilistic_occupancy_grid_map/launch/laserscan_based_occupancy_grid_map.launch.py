@@ -30,7 +30,9 @@ def launch_setup(context, *args, **kwargs):
     # load parameter files
     param_file = LaunchConfiguration("param_file").perform(context)
     with open(param_file, "r") as f:
-        laserscan_based_occupancy_grid_map_node_params = yaml.safe_load(f)["/**"]["ros__parameters"]
+        laserscan_based_occupancy_grid_map_node_params = yaml.safe_load(f)["/**"][
+            "ros__parameters"
+        ]
 
     updater_param_file = LaunchConfiguration("updater_param_file").perform(context)
     with open(updater_param_file, "r") as f:
@@ -81,7 +83,9 @@ def launch_setup(context, *args, **kwargs):
                     "concurrency_level": 1,
                 }
             ],
-            extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+            extra_arguments=[
+                {"use_intra_process_comms": LaunchConfiguration("use_intra_process")}
+            ],
         ),
         ComposableNode(
             package="autoware_probabilistic_occupancy_grid_map",
@@ -103,14 +107,18 @@ def launch_setup(context, *args, **kwargs):
                 laserscan_based_occupancy_grid_map_node_params,
                 occupancy_grid_map_updater_params,
                 {
-                    "input_obstacle_pointcloud": LaunchConfiguration("input_obstacle_pointcloud"),
+                    "input_obstacle_pointcloud": LaunchConfiguration(
+                        "input_obstacle_pointcloud"
+                    ),
                     "input_obstacle_and_raw_pointcloud": LaunchConfiguration(
                         "input_obstacle_and_raw_pointcloud"
                     ),
                     "updater_type": LaunchConfiguration("updater_type"),
                 },
             ],
-            extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
+            extra_arguments=[
+                {"use_intra_process_comms": LaunchConfiguration("use_intra_process")}
+            ],
         ),
     ]
 
@@ -154,7 +162,9 @@ def generate_launch_description():
             add_launch_arg("use_multithread", "false"),
             add_launch_arg("use_intra_process", "false"),
             add_launch_arg("input/obstacle_pointcloud", "no_ground/oneshot/pointcloud"),
-            add_launch_arg("input/raw_pointcloud", "concatenated/pointcloud"),
+            # 10.15_YSH_changed_input_pointcloud_name
+            # add_launch_arg("input/raw_pointcloud", "concatenated/pointcloud"),
+            add_launch_arg("input/raw_pointcloud", "pointcloud_before_sync"),
             add_launch_arg("output", "occupancy_grid"),
             add_launch_arg("output/laserscan", "virtual_scan/laserscan"),
             add_launch_arg("output/pointcloud", "virtual_scan/pointcloud"),

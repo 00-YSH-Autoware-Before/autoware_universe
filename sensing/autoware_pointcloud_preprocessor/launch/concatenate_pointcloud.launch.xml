@@ -1,6 +1,9 @@
 <launch>
-  <arg name="output" default="/sensing/lidar/concatenated/pointcloud"/>
-  <arg name="output_info" default="/sensing/lidar/concatenated/pointcloud_info"/>
+  <!-- 10.15_YSH_changed_input_pointcloud_name -->
+  <!-- <arg name="output" default="/sensing/lidar/concatenated/pointcloud"/>
+  <arg name="output_info" default="/sensing/lidar/concatenated/pointcloud_info"/> -->
+  <arg name="output" default="/sensing/lidar/pointcloud_before_sync"/>
+  <arg name="output_info" default="/sensing/lidar/pointcloud_before_sync_info"/>
   <!-- Parameter -->
   <arg name="param_file" default="$(find-pkg-share autoware_pointcloud_preprocessor)/config/concatenate_pointclouds.param.yaml"/>
   <node pkg="autoware_pointcloud_preprocessor" exec="concatenate_pointclouds_node" name="concatenate_pointclouds_node" output="screen">

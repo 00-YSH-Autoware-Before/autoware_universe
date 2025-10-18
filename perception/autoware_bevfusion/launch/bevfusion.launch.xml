@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="input/pointcloud" default="/sensing/lidar/concatenated/pointcloud"/>
+  <!-- 10.15_YSH_changed_input_pointcloud_name -->
+  <!-- <arg name="input/pointcloud" default="/sensing/lidar/concatenated/pointcloud"/> -->
+  <arg name="input/pointcloud" default="/sensing/lidar/pointcloud_before_sync"/>
   <arg name="output/objects" default="objects"/>
   <arg name="data_path" default="$(env HOME)/autoware_data" description="packages data and artifacts directory path"/>
   <arg name="model_name" default="bevfusion_lidar">

@@ -5,8 +5,8 @@
     <arg name="timeout" default="20"/>
     <arg name="ego_vehicle_role_name" default="ego_vehicle"/>
     <!-- 10.15_YSH_Carla_model_changed -->
-    <!-- <arg name="vehicle_type" default="vehicle.toyota.prius"/> -->
-    <arg name="vehicle_type" default="vehicle.lincoln.mkz_2020"/>
+    <arg name="vehicle_type" default="vehicle.toyota.prius"/>
+    <!-- <arg name="vehicle_type" default="vehicle.lincoln.mkz_2020"/> -->
 
     <arg name="spawn_point" default="None" description="location of ego vehicle spawn (default is random), example = [0.2 , 4.1, 0.4, 0., 0., 0.]"/>
     <arg name="carla_map" default="Town05"/>
@@ -47,7 +47,11 @@
     </node>
 
     <!-- Awsim configuration frame to CARLA frame -->
-    <node pkg="tf2_ros" exec="static_transform_publisher" name="velodyne_top" args="0 0 1 -1.5386 -0.015 0.001 /velodyne_top /velodyne_top_changed "/>
-    <node pkg="tf2_ros" exec="static_transform_publisher" name="imu" args="0 0 1 -3.10519265 -0.015 -3.14059265359 /tamagawa/imu_link /tamagawa/imu_link_changed "/>
+
+    <!-- 10.15_YSH_tf_changed -->
+    <!-- <node pkg="tf2_ros" exec="static_transform_publisher" name="velodyne_top" args="0 0 1 -1.5386 -0.015 0.001 /velodyne_top /velodyne_top_changed "/> -->
+    <!-- <node pkg="tf2_ros" exec="static_transform_publisher" name="velodyne_top" args="0 0 1 -1.5386 -0.015 0.001 /velodyne_top /velodyne_top_changed "/> -->
+    
+    <!-- <node pkg="tf2_ros" exec="static_transform_publisher" name="imu" args="0 0 1 -3.10519265 -0.015 -3.14059265359 /tamagawa/imu_link /tamagawa/imu_link_changed "/> -->
   </group>
 </launch>

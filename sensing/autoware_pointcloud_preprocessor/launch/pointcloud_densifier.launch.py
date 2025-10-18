@@ -29,7 +29,9 @@ def generate_launch_description():
 
     input_topic = DeclareLaunchArgument(
         "input_topic",
-        default_value="/sensing/lidar/concatenated/pointcloud",
+        # 10.15_YSH_changed_input_pointcloud_name
+        # default_value="/sensing/lidar/concatenated/pointcloud",
+        default_value="/sensing/lidar/pointcloud_before_sync",
         description="Input pointcloud topic",
     )
 
